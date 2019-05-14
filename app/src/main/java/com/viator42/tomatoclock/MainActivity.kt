@@ -3,6 +3,7 @@ package com.viator42.tomatoclock
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
 import android.view.View
+import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -19,10 +20,15 @@ class MainActivity : AppCompatActivity() {
 
         start.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                tomatoView.start()
+                Toast.makeText(this@MainActivity, tomatoView.start(), Toast.LENGTH_SHORT).show()
             }
         })
 
+        stop.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                Toast.makeText(this@MainActivity, tomatoView.stop(), Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     /*

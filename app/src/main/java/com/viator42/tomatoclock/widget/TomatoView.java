@@ -14,10 +14,7 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-
-/**
- * Created by huchengyang on 2017/9/18.
- */
+import com.viator42.tomatoclock.R;
 
 public class TomatoView extends View {
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -39,7 +36,15 @@ public class TomatoView extends View {
     private float touchY;
     private float offsetX;
     private float offsetY;
-    private boolean isStarted;
+
+    public int status = STATUS_STOPPED;
+
+    public final static int STATUS_STARTED = 1;
+    public final static int STATUS_STOPPED = 2;
+    public final static int STATUS_PAUSED = 3;
+
+    private CountDownTimer countDownTimer;
+    private ValueAnimator valueAnimator;
 
     public TomatoView(Context context) {
         super(context);
@@ -99,7 +104,7 @@ public class TomatoView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isStarted) {
+        if (status == STATUS_STARTED) {
             return true;
         }
         float x = event.getX();
@@ -164,12 +169,22 @@ public class TomatoView extends View {
         return sb.toString();
     }
 
-    public void start(){
-        if (countdownTime == 0 || isStarted) {
-            return;
+    /**
+     * 计时开始
+     * @return
+     */
+    public int start(){
+        if(time == 0) {
+            return R.string.MSG_TIME_NOT_SET;
         }
-        isStarted = true;
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
+
+        if (countdownTime == 0 || status == STATUS_STARTED) {
+            return R.string.MSG_STARTED;
+        }
+
+        status = STATUS_STARTED;
+
+        valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
         valueAnimator.setDuration(countdownTime * 1000);
         valueAnimator.setInterpolator(new LinearInterpolator());
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -182,7 +197,7 @@ public class TomatoView extends View {
         });
         valueAnimator.start();
 
-        new CountDownTimer(countdownTime * 1000 + 1000, 1000) {
+        countDownTimer = new CountDownTimer(countdownTime * 1000 + 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 countdownTime = (countdownTime * 1000 - 1000) / 1000;
@@ -194,12 +209,48 @@ public class TomatoView extends View {
             public void onFinish() {
                 mColor = Color.BLACK;
                 sweepVelocity = 0;
-                isStarted = false;
+                status = STATUS_STOPPED;
                 invalidate();
             }
         }.start();
+
+        return R.string.MSG_STARTED;
     }
 
+    /**
+     * 计时结束
+     */
+    public int stop() {
+        if(status != STATUS_STARTED) {
+            return R.string.MSG_NOT_STARTED;
+        }
 
+        sweepVelocity = 0;
+        countdownTime = 0;
+        time = 0;
+        textTime = "00:00";
+        status = STATUS_STOPPED;
+        invalidate();
 
+        valueAnimator.cancel();
+        countDownTimer.cancel();
+
+        return R.string.MSG_STOPPED;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public int getCountdownTime() {
+        return countdownTime;
+    }
+
+    public void setCountdownTime(int countdownTime) {
+        this.countdownTime = countdownTime;
+    }
 }

@@ -2,4 +2,9 @@
     <string name="app_name">番茄钟</string>
     <string name="action_settings">Settings</string>
     <string name="start">开始</string>
+    <string name="stop">结束</string>
+    <string name="MSG_STARTED">计时已开始</string>
+    <string name="MSG_NOT_STARTED">计时尚未开始</string>
+    <string name="MSG_TIME_NOT_SET">尚未设定计时时间</string>
+    <string name="MSG_STOPPED">计时结束</string>
 </resources>
